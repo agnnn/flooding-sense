@@ -17,6 +17,8 @@ module MasterC
 implementation {
   message_t packet;
   bool locked = FALSE;
+  uint16_t counter = 0;
+
 
   event void Boot.booted() {
     call RadioControl.start();
@@ -32,19 +34,21 @@ implementation {
   event void Timer.fired() {
     if (locked) {
       return;
-    }
-    else {
-      radio_sense_msg_t* rsm;
+    } else {
+      CustomMsg_t* rsm;
 
-      rsm = (radio_sense_msg_t*)call Packet.getPayload(&packet, sizeof(radio_sense_msg_t));
+      rsm = (CustomMsg_t*)call Packet.getPayload(&packet, sizeof(CustomMsg_t));
       if (rsm == NULL) {
         return;
       }
+      rsm->type = 0;
       // rsm->error = result;
       // rsm->data = data;
-      printf("Requesting data\n");
+      rsm->counter = counter;
+      counter++;
+      printf("Requesting data counter %u\n", counter);
       printfflush();
-      if (call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(radio_sense_msg_t)) == SUCCESS) {
+      if (call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(CustomMsg_t)) == SUCCESS) {
         locked = TRUE;
       }
     }
@@ -52,18 +56,17 @@ implementation {
 
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
     am_addr_t src = call AMPacket.source(msg);
-
-    // If gone wrong
-    if (len != sizeof(radio_sense_msg_t)) {
+    if (len != sizeof(CustomMsg_t)) {
       return msg;
     } else {
-      radio_sense_msg_t* rsm = (radio_sense_msg_t*)payload;
+      CustomMsg_t* rsm = (CustomMsg_t*)payload;
+      uint8_t type = rsm->type;
       uint16_t val = rsm->data;
-
-      printf("Source: %d\n", src);
-      printf("Data: %d\n", val);
-      printfflush();
-
+      if (type == 1) {
+        printf("Source: %d\n", src);
+        printf("Data: %d\n", val);
+        printfflush();
+      }
       return msg;
     }
   }

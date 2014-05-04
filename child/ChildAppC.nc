@@ -8,7 +8,9 @@ configuration ChildAppC
 implementation {
 
   components MainC, ChildC;
-  // components new TimerMilliC();
+  components new TimerMilliC() as Timer0;
+  //components new TimerMilliC() as Timer1;
+  components LedsC;
 
   // Mote to mote comm
   components ActiveMessageC;
@@ -21,7 +23,9 @@ implementation {
   components new PhotoC() as Sensor;
 
   ChildC.Boot -> MainC;
-  // ChildC.Timer -> TimerMilliC;
+  ChildC.Timer0 -> Timer0;
+  //ChildC.Timer1 -> Timer1;
+  ChildC.Leds -> LedsC;
   ChildC.Read -> Sensor;
 
   ChildC.AMSend -> AMSenderC;
@@ -29,4 +33,5 @@ implementation {
   ChildC.Receive -> AMReceiverC;
   ChildC.RadioControl -> ActiveMessageC;
   ChildC.AMPacket -> AMSenderC;
+
 }
