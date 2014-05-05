@@ -9,7 +9,7 @@ implementation {
 
   components MainC, ChildC;
   components new TimerMilliC() as Timer0;
-  //components new TimerMilliC() as Timer1;
+  components new TimerMilliC() as Timer1;
   components LedsC;
 
   // Mote to mote comm
@@ -24,7 +24,7 @@ implementation {
 
   ChildC.Boot -> MainC;
   ChildC.Timer0 -> Timer0;
-  //ChildC.Timer1 -> Timer1;
+  ChildC.Timer1 -> Timer1;
   ChildC.Leds -> LedsC;
   ChildC.Read -> Sensor;
 
