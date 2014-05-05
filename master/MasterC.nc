@@ -43,10 +43,10 @@ implementation {
       }
       rsm->type = 0;
       rsm->counter = counter;
+      rsm->forwarded = FALSE;
       counter++;
       printf("Requesting data counter %u\n", counter);
       printfflush();
-      //if (call AMSend.send(AM_BROADCAST_ADDR, &bcast_packet, sizeof(CustomMsg_t)) == SUCCESS) {
       if (call AMSend.send(AM_BROADCAST_ADDR, &bcast_packet, sizeof(CustomMsg_t)) == SUCCESS) {
         locked = TRUE;
       }
@@ -54,7 +54,6 @@ implementation {
   }
 
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
-    am_addr_t src = call AMPacket.source(msg);
     if (len != sizeof(CustomMsg_t)) {
       return msg;
     } else {
