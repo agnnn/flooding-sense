@@ -75,7 +75,7 @@ implementation {
         child_sense_msg = (CustomMsg_t*)call Packet.getPayload(&child_sense_packet, sizeof(CustomMsg_t));
         child_sense_msg->type = rsm->type;
         child_sense_msg->nodeid = rsm->nodeid;
-        self_sense_msg->forwarded = rsm->forwarded;
+        child_sense_msg->forwarded = TRUE;
         child_sense_msg->data = rsm->data;
         child_sense_msg->counter = rsm->counter;
         if (call AMSend.send(parent_node, &child_sense_packet, sizeof(CustomMsg_t)) == SUCCESS) {
