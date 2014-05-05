@@ -14,8 +14,7 @@ A child mote receiving from the master:
 A child mode receiving the broadcast from a child mote:
 
 1. Checks if this broadcast has been received before;
-2. a) If it has, discards and exit;
-2. b) If it hasn't, continues;
+2. a) If it has, discards and exit; b) If it hasn't, continues;
 3. Sets the child that transmitted the broadcast as the parent;
 4. Forwards this broadcast message to its neighboards (another broadcast);
 5. Both the green and the red leds are toggled;
