@@ -31,19 +31,17 @@ implementation {
   }
   event void RadioControl.stopDone(error_t err) {}
 
+  // Send a broadcast message
   event void Timer.fired() {
     if (locked) {
       return;
     } else {
-      CustomMsg_t* rsm;
+      CustomMsg_t* bcast_msg;
 
-      rsm = (CustomMsg_t*)call Packet.getPayload(&bcast_packet, sizeof(CustomMsg_t));
-      if (rsm == NULL) {
-        return;
-      }
-      rsm->type = 0;
-      rsm->counter = counter;
-      rsm->forwarded = FALSE;
+      bcast_msg = (CustomMsg_t*)call Packet.getPayload(&bcast_packet, sizeof(CustomMsg_t));
+      bcast_msg->type = 0;
+      bcast_msg->counter = counter;
+      bcast_msg->forwarded = FALSE;
       counter++;
       printf("Requesting data counter %u\n", counter);
       printfflush();
@@ -53,6 +51,7 @@ implementation {
     }
   }
 
+  // When message is received
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
     if (len != sizeof(CustomMsg_t)) {
       return msg;
@@ -60,10 +59,12 @@ implementation {
       CustomMsg_t* rsm = (CustomMsg_t*)payload;
       uint8_t type = rsm->type;
       uint8_t nodeid = rsm->nodeid;
+      bool forwarded = rsm->forwarded;
       uint16_t val = rsm->data;
       if (type == 1) {
         printf("Source: %d\n", nodeid);
         printf("Data: %d\n", val);
+        if (forwarded) { printf("That was a forwarded sense message!\n"); }
         printfflush();
       }
       return msg;

@@ -75,6 +75,7 @@ implementation {
         child_sense_msg = (CustomMsg_t*)call Packet.getPayload(&child_sense_packet, sizeof(CustomMsg_t));
         child_sense_msg->type = rsm->type;
         child_sense_msg->nodeid = rsm->nodeid;
+        self_sense_msg->forwarded = rsm->forwarded;
         child_sense_msg->data = rsm->data;
         child_sense_msg->counter = rsm->counter;
         if (call AMSend.send(parent_node, &child_sense_packet, sizeof(CustomMsg_t)) == SUCCESS) {
@@ -91,11 +92,12 @@ implementation {
   }
 
   event void Read.readDone(error_t result, uint16_t data) {
-    CustomMsg_t* rsm;
-    rsm = (CustomMsg_t*)call Packet.getPayload(&self_sense_packet, sizeof(CustomMsg_t));
-    rsm->type = 1;
-    rsm->nodeid = TOS_NODE_ID;
-    rsm->data = data;
+    CustomMsg_t* self_sense_msg;
+    self_sense_msg = (CustomMsg_t*)call Packet.getPayload(&self_sense_packet, sizeof(CustomMsg_t));
+    self_sense_msg->type = 1;
+    self_sense_msg->nodeid = TOS_NODE_ID;
+    self_sense_msg->forwarded = FALSE;
+    self_sense_msg->data = data;
     if (call AMSend.send(parent_node, &self_sense_packet, sizeof(CustomMsg_t)) == SUCCESS) { locked = TRUE; }
   }
 
